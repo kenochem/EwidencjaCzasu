@@ -1,6 +1,6 @@
-﻿# đź”§ Dokumentacja techniczna
+# 🔧 Dokumentacja techniczna
 
-[â† PowrĂłt do README](../README.md)
+[← Powrót do README](../README.md)
 
 - [Technologia](#technologia)
 - [Architektura](#architektura)
@@ -8,13 +8,13 @@
 - [Pliki danych](#pliki-danych)
 - [Ustawienia](#ustawienia)
 - [Wyliczenia czasu pracy](#wyliczenia-czasu-pracy)
-- [WskaĹşniki absencji](#wskaĹşniki-absencji)
-- [OdpornoĹ›Ä‡ na awarie](#odpornoĹ›Ä‡-na-awarie)
-- [WyglÄ…d](#wyglÄ…d)
+- [Wskaźniki absencji](#wskaźniki-absencji)
+- [Odporność na awarie](#odporność-na-awarie)
+- [Wygląd](#wygląd)
 - [Kompilacja](#kompilacja)
 - [Testy](#testy)
-- [Parametry wiersza poleceĹ„](#parametry-wiersza-poleceĹ„)
-- [WskazĂłwki dla rozwoju](#wskazĂłwki-dla-rozwoju)
+- [Parametry wiersza poleceń](#parametry-wiersza-poleceń)
+- [Wskazówki dla rozwoju](#wskazówki-dla-rozwoju)
 
 ---
 
@@ -22,187 +22,187 @@
 
 | | |
 |---|---|
-| JÄ™zyk | C# 5 (kompilator `csc.exe` z .NET Framework 4, wbudowany w Windows) |
-| Interfejs | Windows Forms, wĹ‚asne kontrolki rysowane GDI+ |
-| ZaleĹĽnoĹ›ci | brak â€“ tylko biblioteki systemowe (`System.Windows.Forms`, `System.Drawing`, `System.IO.Compression`) |
-| Dane | pliki CSV (UTF-8 z BOM, separator `;`) â€“ czytelne w Excelu |
+| Język | C# 5 (kompilator `csc.exe` z .NET Framework 4, wbudowany w Windows) |
+| Interfejs | Windows Forms, własne kontrolki rysowane GDI+ |
+| Zależności | brak – tylko biblioteki systemowe (`System.Windows.Forms`, `System.Drawing`, `System.IO.Compression`) |
+| Dane | pliki CSV (UTF-8 z BOM, separator `;`) – czytelne w Excelu |
 | Wynik | jeden plik `EwidencjaCzasu.exe` (~200 KB), bez instalatora |
 
-> Kompilator .NET Framework obsĹ‚uguje tylko C# 5 â€“ w kodzie nie ma interpolacji `$"..."`, operatora `?.`
-> ani skĹ‚adni `=>` dla wĹ‚aĹ›ciwoĹ›ci.
+> Kompilator .NET Framework obsługuje tylko C# 5 – w kodzie nie ma interpolacji `$"..."`, operatora `?.`
+> ani składni `=>` dla właściwości.
 
 ## Architektura
 
 ```
-â”Śâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”   numer karty   â”Śâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
-â”‚ Czytnik.cs              â”‚ â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â–¶ â”‚ Aplikacja.cs  (TrayApp)      â”‚
-â”‚ KeyboardCapture         â”‚                 â”‚ OnCard â†’ wejĹ›cie / wyjĹ›cie   â”‚
-â”‚ (osobny wÄ…tek + hak     â”‚                 â”‚ przypomnienia, kopie, PIN    â”‚
-â”‚  WH_KEYBOARD_LL)        â”‚                 â”‚ dymki (Toast), okna dialogoweâ”‚
-â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”                 â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
-                                                           â”‚
-                    â”Śâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”Ľâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
-                    â–Ľ                                      â–Ľ                      â–Ľ
-        â”Śâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”            â”Śâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”   â”Śâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
-        â”‚ Dane.cs              â”‚            â”‚ Panel.cs / Grafik.cs â”‚   â”‚ Wyglad.cs        â”‚
-        â”‚ Store   â€“ pliki CSV  â”‚ â—€â”€â”€â”€â”€â”€â”€â”€â”€â–¶ â”‚ panel zarzÄ…dzania,   â”‚   â”‚ Theme, kontrolki â”‚
-        â”‚ Data    â€“ indeks dni â”‚            â”‚ grafik, plan urlopĂłw â”‚   â”‚ (Card, DateBoxâ€¦) â”‚
-        â”‚ Calc    â€“ wyliczenia â”‚            â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”   â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
-        â”‚ Reports â€“ CSV / HTML â”‚
-        â”‚ PlCalendar, Cfg, Pin â”‚
-        â”‚ CloudBackup          â”‚
-        â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+┌─────────────────────────┐   numer karty   ┌──────────────────────────────┐
+│ Czytnik.cs              │ ──────────────▶ │ Aplikacja.cs  (TrayApp)      │
+│ KeyboardCapture         │                 │ OnCard → wejście / wyjście   │
+│ (osobny wątek + hak     │                 │ przypomnienia, kopie, PIN    │
+│  WH_KEYBOARD_LL)        │                 │ dymki (Toast), okna dialogowe│
+└─────────────────────────┘                 └──────────────┬───────────────┘
+                                                           │
+                    ┌──────────────────────────────────────┼──────────────────────┐
+                    ▼                                      ▼                      ▼
+        ┌──────────────────────┐            ┌──────────────────────┐   ┌──────────────────┐
+        │ Dane.cs              │            │ Panel.cs / Grafik.cs │   │ Wyglad.cs        │
+        │ Store   – pliki CSV  │ ◀────────▶ │ panel zarządzania,   │   │ Theme, kontrolki │
+        │ Data    – indeks dni │            │ grafik, plan urlopów │   │ (Card, DateBox…) │
+        │ Calc    – wyliczenia │            └──────────────────────┘   └──────────────────┘
+        │ Reports – CSV / HTML │
+        │ PlCalendar, Cfg, Pin │
+        │ CloudBackup          │
+        └──────────────────────┘
 ```
 
-| Klasa | OdpowiedzialnoĹ›Ä‡ |
+| Klasa | Odpowiedzialność |
 |---|---|
-| `Program` | start, blokada drugiej instancji (mutex), obsĹ‚uga awarii i auto-restart |
+| `Program` | start, blokada drugiej instancji (mutex), obsługa awarii i auto-restart |
 | `Cfg` | odczyt i zapis `ustawienia.txt` |
-| `Store` | odczyt/zapis plikĂłw CSV, wykrywanie kodowania (UTF-8 / Windows-1250), historia zmian, znacznik â€žĹĽyjÄ™â€ť |
-| `Data` | jednorazowy odczyt wszystkich danych + indeksy (odbicia wg osoby i dnia, nieobecnoĹ›ci, dni firmowe) |
-| `Calc` | pary wejĹ›cieâ€“wyjĹ›cie, `DayInfo` dnia, zakresy, podsumowania, urlop, Bradford, absencja |
-| `PlCalendar` | polskie Ĺ›wiÄ™ta (z WielkanocÄ…), dni robocze, wymiar czasu pracy |
-| `Reports` | raport CSV, karty ewidencji HTML (umowa o pracÄ™ / zlecenie) |
+| `Store` | odczyt/zapis plików CSV, wykrywanie kodowania (UTF-8 / Windows-1250), historia zmian, znacznik „żyję” |
+| `Data` | jednorazowy odczyt wszystkich danych + indeksy (odbicia wg osoby i dnia, nieobecności, dni firmowe) |
+| `Calc` | pary wejście–wyjście, `DayInfo` dnia, zakresy, podsumowania, urlop, Bradford, absencja |
+| `PlCalendar` | polskie święta (z Wielkanocą), dni robocze, wymiar czasu pracy |
+| `Reports` | raport CSV, karty ewidencji HTML (umowa o pracę / zlecenie) |
 | `CloudBackup` | cotygodniowe archiwum ZIP do wskazanego folderu |
-| `Pin` | PIN administratora (PBKDF2, 20 000 iteracji, sĂłl), blokada po bĹ‚Ä™dach |
+| `Pin` | PIN administratora (PBKDF2, 20 000 iteracji, sól), blokada po błędach |
 | `KeyboardCapture` | przechwytywanie czytnika |
 | `TrayApp` | ikonka, odbicia, przypomnienia, nieusypianie, autostart, wykrywanie przerw |
-| `PanelForm` | panel: strony, tabele, wykres, licznik na ĹĽywo |
-| `MonthSchedule`, `YearPlanner` | grafik miesiÄ™czny i roczny plan urlopĂłw (rysowane w caĹ‚oĹ›ci) |
+| `PanelForm` | panel: strony, tabele, wykres, licznik na żywo |
+| `MonthSchedule`, `YearPlanner` | grafik miesięczny i roczny plan urlopów (rysowane w całości) |
 | `Theme` i kontrolki | motywy, przyciski, karty, pola dat/godzin, listy rozwijane |
 
 ## Rozpoznawanie czytnika
 
-Czytnik USB w trybie klawiatury wysyĹ‚a cyfry numeru karty i Enter. Windows nie pozwala zwykĹ‚emu programowi
-jednoczeĹ›nie sprawdziÄ‡, z ktĂłrej klawiatury przyszedĹ‚ znak, i go zablokowaÄ‡ (wymagaĹ‚oby to sterownika),
+Czytnik USB w trybie klawiatury wysyła cyfry numeru karty i Enter. Windows nie pozwala zwykłemu programowi
+jednocześnie sprawdzić, z której klawiatury przyszedł znak, i go zablokować (wymagałoby to sterownika),
 dlatego program rozpoznaje czytnik **po tempie**:
 
-1. Globalny hak `WH_KEYBOARD_LL` dziaĹ‚a w osobnym wÄ…tku z wĹ‚asnÄ… pÄ™tlÄ… komunikatĂłw
-   (niezaleĹĽnie od obciÄ…ĹĽenia interfejsu).
-2. KaĹĽda cyfra jest na chwilÄ™ **wstrzymywana** w buforze.
-3. JeĹ›li przyjdzie **â‰Ą `min_cyfr` cyfr + Enter**, a kaĹĽdy odstÄ™p miÄ™dzy zdarzeniami jest **< `max_odstep_ms`**
-   (domyĹ›lnie 50 ms) â€“ to karta. Bufor jest zjadany, numer trafia do `OnCard`.
-4. W kaĹĽdym innym przypadku (przerwa, inny klawisz, przytrzymanie klawisza) wstrzymane klawisze sÄ…
-   **odtwarzane** przez `SendInput` w oryginalnej kolejnoĹ›ci, oznaczone znacznikiem `dwExtraInfo`,
-   ĹĽeby hak ich ponownie nie przechwyciĹ‚.
-5. Zdarzenia wstrzykniÄ™te przez inne programy (np. menedĹĽery haseĹ‚) sÄ… ignorowane.
-6. Hak jest odĹ›wieĹĽany co 5 minut oraz po wybudzeniu z uĹ›pienia i odblokowaniu sesji
-   (Windows potrafi go po cichu odpiÄ…Ä‡).
+1. Globalny hak `WH_KEYBOARD_LL` działa w osobnym wątku z własną pętlą komunikatów
+   (niezależnie od obciążenia interfejsu).
+2. Każda cyfra jest na chwilę **wstrzymywana** w buforze.
+3. Jeśli przyjdzie **≥ `min_cyfr` cyfr + Enter**, a każdy odstęp między zdarzeniami jest **< `max_odstep_ms`**
+   (domyślnie 50 ms) – to karta. Bufor jest zjadany, numer trafia do `OnCard`.
+4. W każdym innym przypadku (przerwa, inny klawisz, przytrzymanie klawisza) wstrzymane klawisze są
+   **odtwarzane** przez `SendInput` w oryginalnej kolejności, oznaczone znacznikiem `dwExtraInfo`,
+   żeby hak ich ponownie nie przechwycił.
+5. Zdarzenia wstrzyknięte przez inne programy (np. menedżery haseł) są ignorowane.
+6. Hak jest odświeżany co 5 minut oraz po wybudzeniu z uśpienia i odblokowaniu sesji
+   (Windows potrafi go po cichu odpiąć).
 
-Ograniczenia: hak nie dziaĹ‚a na ekranie blokady / logowania; programy uruchomione jako administrator
-mogÄ… nie przyjÄ…Ä‡ odtworzonych klawiszy.
+Ograniczenia: hak nie działa na ekranie blokady / logowania; programy uruchomione jako administrator
+mogą nie przyjąć odtworzonych klawiszy.
 
 ## Pliki danych
 
-Folder: `%USERPROFILE%\Documents\EwidencjaCzasu` (lub inny â€“ parametr `/dane:`).
+Folder: `%USERPROFILE%\Documents\EwidencjaCzasu` (lub inny – parametr `/dane:`).
 
-| Plik | ZawartoĹ›Ä‡ |
+| Plik | Zawartość |
 |---|---|
-| `pracownicy.csv` | `UID;ImiÄ™ i nazwisko;Aktywny;Urlop roczny (dni);Urlop zalegĹ‚y (dni);Forma zatrudnienia;Etat` |
-| `odbicia.csv` | `Data;Godzina;UID;Pracownik;Typ;ĹąrĂłdĹ‚o` â€“ typ `WEJĹšCIE`/`WYJĹšCIE`, ĹşrĂłdĹ‚o `KARTA`/`RÄCZNIE`/`KARTA-POPRAWIONE` |
-| `oczekujace.csv` | odbicia zapisane tymczasowo, gdy `odbicia.csv` byĹ‚ zablokowany (np. otwarty w Excelu) |
-| `nieobecnosci.csv` | `Data;UID;Pracownik;Rodzaj;Uwagi` â€“ kody z tabeli w instrukcji |
-| `dni_wolne_firmowe.csv` | `Data;Rodzaj;Nazwa` â€“ rodzaj `DW` (pĹ‚atny) lub `WS` (za Ĺ›wiÄ™to w sobotÄ™) |
-| `historia_zmian.csv` | `Kiedy;Operacja;Przed;Po;UĹĽytkownik Windows` |
-| `przerwy_w_dzialaniu.csv` | okresy, w ktĂłrych program nie dziaĹ‚aĹ‚ |
-| `ustawienia.txt` | ustawienia (klucz=wartoĹ›Ä‡) |
-| `pin.dat` | sĂłl i skrĂłt PIN-u (PBKDF2) |
+| `pracownicy.csv` | `UID;Imię i nazwisko;Aktywny;Urlop roczny (dni);Urlop zaległy (dni);Forma zatrudnienia;Etat` |
+| `odbicia.csv` | `Data;Godzina;UID;Pracownik;Typ;Źródło` – typ `WEJŚCIE`/`WYJŚCIE`, źródło `KARTA`/`RĘCZNIE`/`KARTA-POPRAWIONE` |
+| `oczekujace.csv` | odbicia zapisane tymczasowo, gdy `odbicia.csv` był zablokowany (np. otwarty w Excelu) |
+| `nieobecnosci.csv` | `Data;UID;Pracownik;Rodzaj;Uwagi` – kody z tabeli w instrukcji |
+| `dni_wolne_firmowe.csv` | `Data;Rodzaj;Nazwa` – rodzaj `DW` (płatny) lub `WS` (za święto w sobotę) |
+| `historia_zmian.csv` | `Kiedy;Operacja;Przed;Po;Użytkownik Windows` |
+| `przerwy_w_dzialaniu.csv` | okresy, w których program nie działał |
+| `ustawienia.txt` | ustawienia (klucz=wartość) |
+| `pin.dat` | sól i skrót PIN-u (PBKDF2) |
 | `ostatnio_aktywny.txt` | znacznik czasu aktualizowany co 30 s |
-| `ostatnia_kopia.txt`, `awarie.txt`, `bledy.log` | stan kopii, licznik awarii, log bĹ‚Ä™dĂłw |
-| `kopie\` | codzienne kopie plikĂłw CSV (60 dni) |
+| `ostatnia_kopia.txt`, `awarie.txt`, `bledy.log` | stan kopii, licznik awarii, log błędów |
+| `kopie\` | codzienne kopie plików CSV (60 dni) |
 | `raporty\` | wygenerowane raporty CSV i karty HTML |
 
 Zasady zapisu:
-- dopisywanie odbiÄ‡ â€“ do koĹ„ca pliku, z zachowaniem kodowania pliku (Excel potrafi zapisaÄ‡ CSV w Windows-1250),
-- peĹ‚ny zapis (poprawki) â€“ do pliku tymczasowego, potem podmiana; przy blokadzie â€“ czytelny komunikat,
-- porĂłwnania numerĂłw kart ignorujÄ… zera wiodÄ…ce.
+- dopisywanie odbić – do końca pliku, z zachowaniem kodowania pliku (Excel potrafi zapisać CSV w Windows-1250),
+- pełny zapis (poprawki) – do pliku tymczasowego, potem podmiana; przy blokadzie – czytelny komunikat,
+- porównania numerów kart ignorują zera wiodące.
 
 ## Ustawienia
 
-`ustawienia.txt` â€“ wiÄ™kszoĹ›Ä‡ opcji jest teĹĽ w oknie *Ustawienia*.
+`ustawienia.txt` – większość opcji jest też w oknie *Ustawienia*.
 
-| Klucz | DomyĹ›lnie | Opis |
+| Klucz | Domyślnie | Opis |
 |---|---|---|
-| `godzina_od`, `godzina_do` | `08:00`, `16:00` | godziny pracy (spĂłĹşnienia, wczeĹ›niejsze wyjĹ›cia) |
-| `norma_godzin` | `8` | norma dobowa (peĹ‚ny etat) |
-| `tolerancja_min` | `5` | po ilu minutach liczy siÄ™ spĂłĹşnienie |
+| `godzina_od`, `godzina_do` | `08:00`, `16:00` | godziny pracy (spóźnienia, wcześniejsze wyjścia) |
+| `norma_godzin` | `8` | norma dobowa (pełny etat) |
+| `tolerancja_min` | `5` | po ilu minutach liczy się spóźnienie |
 | `noc_od`, `noc_do` | `22:00`, `06:00` | pora nocna |
-| `przypomnienie`, `przypomnienie_o` | `1`, `16:30` | przypomnienie o odbiciu wyjĹ›cia |
-| `nie_usypiaj`, `nie_usypiaj_od`, `nie_usypiaj_do` | `1`, `07:00`, `18:00` | blokada uĹ›pienia w dni robocze |
-| `folder_kopii`, `kopia_co_dni` | â€“, `7` | kopia ZIP poza komputer |
-| `motyw`, `akcent` | `system`, `niebieski` | wyglÄ…d |
-| `autostart` | `1` | program pilnuje wpisu w `HKCU\â€¦\Run` |
-| `blokada_sekund` | `60` | ignorowanie ponownego przyĹ‚oĹĽenia tej samej karty |
-| `min_cyfr` | `8` | minimalna dĹ‚ugoĹ›Ä‡ numeru karty |
-| `max_odstep_ms` | `50` | maksymalny odstÄ™p miÄ™dzy znakami z czytnika |
+| `przypomnienie`, `przypomnienie_o` | `1`, `16:30` | przypomnienie o odbiciu wyjścia |
+| `nie_usypiaj`, `nie_usypiaj_od`, `nie_usypiaj_do` | `1`, `07:00`, `18:00` | blokada uśpienia w dni robocze |
+| `folder_kopii`, `kopia_co_dni` | –, `7` | kopia ZIP poza komputer |
+| `motyw`, `akcent` | `system`, `niebieski` | wygląd |
+| `autostart` | `1` | program pilnuje wpisu w `HKCU\…\Run` |
+| `blokada_sekund` | `60` | ignorowanie ponownego przyłożenia tej samej karty |
+| `min_cyfr` | `8` | minimalna długość numeru karty |
+| `max_odstep_ms` | `50` | maksymalny odstęp między znakami z czytnika |
 
 ## Wyliczenia czasu pracy
 
-**Pary wejĹ›cieâ€“wyjĹ›cie** (`Calc.PairDay`) â€“ odbicia z jednego dnia Ĺ‚Ä…czone kolejno; brak pary oznacza
-`BRAK WYJĹšCIA` / `BRAK WEJĹšCIA` (dziĹ› otwarta para = â€žw pracyâ€ť).
+**Pary wejście–wyjście** (`Calc.PairDay`) – odbicia z jednego dnia łączone kolejno; brak pary oznacza
+`BRAK WYJŚCIA` / `BRAK WEJŚCIA` (dziś otwarta para = „w pracy”).
 
 **Wymiar czasu pracy** (`PlCalendar.NormBetween`, art. 130 KP):
 
 ```
-wymiar = norma Ă— etat Ă— (dni ponâ€“pt  â’  Ĺ›wiÄ™ta przypadajÄ…ce w dniu innym niĹĽ niedziela)
+wymiar = norma × etat × (dni pon–pt  −  święta przypadające w dniu innym niż niedziela)
 ```
 
-ĹšwiÄ™ta: 1.01, 6.01, Wielkanoc i PoniedziaĹ‚ek Wielkanocny, 1.05, 3.05, Zielone ĹšwiÄ…tki, BoĹĽe CiaĹ‚o,
+Święta: 1.01, 6.01, Wielkanoc i Poniedziałek Wielkanocny, 1.05, 3.05, Zielone Świątki, Boże Ciało,
 15.08, 1.11, 11.11, 24.12 (od 2025 r.), 25.12, 26.12. Wielkanoc liczona algorytmem Meeusa/Jonesa/Butchera.
 
-**DzieĹ„ umowy o pracÄ™** (`Calc.Day`):
-- nieobecnoĹ›Ä‡ usprawiedliwiona (rodzaj 1) â€“ zalicza do normy brakujÄ…ce godziny (obniĹĽa wymiar),
-- praca zdalna / delegacja (rodzaj 0) â€“ liczy siÄ™ jako przepracowane,
-- nadgodziny â€“ czas ponad normÄ™ dobowÄ… (od peĹ‚nej minuty); w dzieĹ„ wolny caĹ‚y czas to praca w dzieĹ„ wolny,
-- spĂłĹşnienie â€“ pierwsze wejĹ›cie po `godzina_od + tolerancja`,
-- wczeĹ›niejsze wyjĹ›cie â€“ ostatnie wyjĹ›cie przed `godzina_do â’ tolerancja`, gdy norma nie zostaĹ‚a wykonana,
-- pora nocna â€“ czÄ™Ĺ›Ä‡ pracy w przedziale `noc_odâ€“noc_do`.
+**Dzień umowy o pracę** (`Calc.Day`):
+- nieobecność usprawiedliwiona (rodzaj 1) – zalicza do normy brakujące godziny (obniża wymiar),
+- praca zdalna / delegacja (rodzaj 0) – liczy się jako przepracowane,
+- nadgodziny – czas ponad normę dobową (od pełnej minuty); w dzień wolny cały czas to praca w dzień wolny,
+- spóźnienie – pierwsze wejście po `godzina_od + tolerancja`,
+- wcześniejsze wyjście – ostatnie wyjście przed `godzina_do − tolerancja`, gdy norma nie została wykonana,
+- pora nocna – część pracy w przedziale `noc_od–noc_do`.
 
-**Saldo** = przepracowane + nieobecnoĹ›ci usprawiedliwione â’ wymiar do dnia dzisiejszego.
+**Saldo** = przepracowane + nieobecności usprawiedliwione − wymiar do dnia dzisiejszego.
 
-**Brak obecnoĹ›ci** â€“ dzieĹ„ roboczy bez odbiÄ‡ i nieobecnoĹ›ci (od pierwszego wpisu danej osoby do wczoraj),
-tylko dla umowy o pracÄ™.
+**Brak obecności** – dzień roboczy bez odbić i nieobecności (od pierwszego wpisu danej osoby do wczoraj),
+tylko dla umowy o pracę.
 
-**Umowy cywilnoprawne** (zlecenie, dzieĹ‚o, B2B) â€“ liczony jest wyĹ‚Ä…cznie przepracowany czas,
-bez normy, nadgodzin, spĂłĹşnieĹ„, nieobecnoĹ›ci i brakĂłw obecnoĹ›ci.
+**Umowy cywilnoprawne** (zlecenie, dzieło, B2B) – liczony jest wyłącznie przepracowany czas,
+bez normy, nadgodzin, spóźnień, nieobecności i braków obecności.
 
-**DzieĹ„ wolny firmowy** â€“ dla osĂłb na umowie o pracÄ™ dziaĹ‚a jak nieobecnoĹ›Ä‡ (`DW` lub `WS`)
+**Dzień wolny firmowy** – dla osób na umowie o pracę działa jak nieobecność (`DW` lub `WS`)
 generowana w locie przez `Data.AbsenceOn` (nie jest zapisywana w `nieobecnosci.csv`).
 
-## WskaĹşniki absencji
+## Wskaźniki absencji
 
-NieobecnoĹ›ci nieplanowane: `CH`, `UĹ»`, `OP`, `NN`. Dni wolne firmowe i weekendy sÄ… pomijane.
+Nieobecności nieplanowane: `CH`, `UŻ`, `OP`, `NN`. Dni wolne firmowe i weekendy są pomijane.
 
-- **WskaĹşnik absencji** = dni nieobecnoĹ›ci nieplanowanej / dni robocze w okresie (do dziĹ›) Ă— 100%.
-- **WspĂłĹ‚czynnik Bradforda** = SÂ˛ Ă— D z ostatnich 12 miesiÄ™cy, gdzie S to liczba odrÄ™bnych ciÄ…gĂłw
-  nieobecnoĹ›ci (kolejne dni robocze tworzÄ… jeden ciÄ…g), a D â€“ Ĺ‚Ä…czna liczba dni.
-  Progi w interfejsie: < 50 zielony, 50â€“199 ĹĽĂłĹ‚ty, â‰Ą 200 czerwony.
+- **Wskaźnik absencji** = dni nieobecności nieplanowanej / dni robocze w okresie (do dziś) × 100%.
+- **Współczynnik Bradforda** = S² × D z ostatnich 12 miesięcy, gdzie S to liczba odrębnych ciągów
+  nieobecności (kolejne dni robocze tworzą jeden ciąg), a D – łączna liczba dni.
+  Progi w interfejsie: < 50 zielony, 50–199 żółty, ≥ 200 czerwony.
 
-## OdpornoĹ›Ä‡ na awarie
+## Odporność na awarie
 
-| Mechanizm | DziaĹ‚anie |
+| Mechanizm | Działanie |
 |---|---|
-| Natychmiastowy zapis | kaĹĽde odbicie od razu na dysku |
-| Zapis tymczasowy | gdy plik jest zablokowany â€“ `oczekujace.csv`, przeniesienie przy kolejnym zapisie |
+| Natychmiastowy zapis | każde odbicie od razu na dysku |
+| Zapis tymczasowy | gdy plik jest zablokowany – `oczekujace.csv`, przeniesienie przy kolejnym zapisie |
 | Autostart | wpis w `HKCU\Software\Microsoft\Windows\CurrentVersion\Run`, poprawiany po przeniesieniu `.exe` |
-| Znacznik â€žĹĽyjÄ™â€ť | co 30 s; po starcie / wybudzeniu program liczy przerwÄ™ i ostrzega, jeĹ›li wypadĹ‚a w godzinach pracy |
-| Auto-restart | nieobsĹ‚uĹĽony wyjÄ…tek â†’ `bledy.log` i ponowne uruchomienie (`/restart`); maks. 3 razy w 10 minut |
+| Znacznik „żyję” | co 30 s; po starcie / wybudzeniu program liczy przerwę i ostrzega, jeśli wypadła w godzinach pracy |
+| Auto-restart | nieobsłużony wyjątek → `bledy.log` i ponowne uruchomienie (`/restart`); maks. 3 razy w 10 minut |
 | Nieusypianie | `SetThreadExecutionState(ES_SYSTEM_REQUIRED)` w dni robocze w ustawionych godzinach |
 | Kopie | codzienne lokalne + cotygodniowe ZIP (52 ostatnie) |
 
-## WyglÄ…d
+## Wygląd
 
-`Theme` przechowuje paletÄ™ dla motywu jasnego i ciemnego oraz 8 kolorĂłw akcentu.
-`ThemedForm` stosuje motyw do okna (takĹĽe ciemny pasek tytuĹ‚u przez `DwmSetWindowAttribute`)
-i odĹ›wieĹĽa je po zmianie motywu (`Theme.Changed`).
+`Theme` przechowuje paletę dla motywu jasnego i ciemnego oraz 8 kolorów akcentu.
+`ThemedForm` stosuje motyw do okna (także ciemny pasek tytułu przez `DwmSetWindowAttribute`)
+i odświeża je po zmianie motywu (`Theme.Changed`).
 
-WĹ‚asne kontrolki: `Card`, `StatCard`, `Banner`, `NavButton`, `DateBox` (pole daty â€ą â€ş z kalendarzem),
+Własne kontrolki: `Card`, `StatCard`, `Banner`, `NavButton`, `DateBox` (pole daty ‹ › z kalendarzem),
 `TimeBox`, `ThemedCombo`, `Swatch`, `BarChart`, `MonthSchedule`, `YearPlanner`.
-Przyciski standardowe sÄ… rysowane od nowa: `Tag` = `primary` / `danger` / `ghost`,
-pierwszy znak z czcionki *Segoe Fluent Icons* jest ikonÄ….
+Przyciski standardowe są rysowane od nowa: `Tag` = `primary` / `danger` / `ghost`,
+pierwszy znak z czcionki *Segoe Fluent Icons* jest ikoną.
 
-Siatka tabel jest rysowana przez program (`Theme.GridLines`), a kontrolki rysujÄ…ce z wygĹ‚adzaniem
-zapisujÄ… i przywracajÄ… stan `Graphics` â€“ inaczej linie tabel rysowaĹ‚y siÄ™ niejednolicie.
+Siatka tabel jest rysowana przez program (`Theme.GridLines`), a kontrolki rysujące z wygładzaniem
+zapisują i przywracają stan `Graphics` – inaczej linie tabel rysowały się niejednolicie.
 
 ## Kompilacja
 
@@ -210,7 +210,7 @@ zapisujÄ… i przywracajÄ… stan `Graphics` â€“ inaczej linie tabel ryso
 zrodla\kompiluj.bat
 ```
 
-lub rÄ™cznie:
+lub ręcznie:
 
 ```bat
 "%WINDIR%\Microsoft.NET\Framework64\v4.0.30319\csc.exe" /nologo /codepage:65001 /target:winexe /optimize+ ^
@@ -224,25 +224,25 @@ lub rÄ™cznie:
 testy\uruchom_testy.bat
 ```
 
-Testy (`testy/Testy.cs`) dziaĹ‚ajÄ… na folderze tymczasowym i sprawdzajÄ… m.in.:
-rozpoznawanie czytnika (rĂłĹĽne tempa, kolejnoĹ›Ä‡ klawiszy, przytrzymanie), kalendarz Ĺ›wiÄ…t i wymiar czasu pracy,
-spĂłĹşnienia, nadgodziny, pracÄ™ w dni wolne, urlopy i pracÄ™ zdalnÄ…, braki obecnoĹ›ci, poprawki i historiÄ™ zmian,
-raporty CSV i HTML, kopiÄ™ ZIP, przerwy w dziaĹ‚aniu, formy zatrudnienia i etat, dni wolne firmowe, Bradforda.
+Testy (`testy/Testy.cs`) działają na folderze tymczasowym i sprawdzają m.in.:
+rozpoznawanie czytnika (różne tempa, kolejność klawiszy, przytrzymanie), kalendarz świąt i wymiar czasu pracy,
+spóźnienia, nadgodziny, pracę w dni wolne, urlopy i pracę zdalną, braki obecności, poprawki i historię zmian,
+raporty CSV i HTML, kopię ZIP, przerwy w działaniu, formy zatrudnienia i etat, dni wolne firmowe, Bradforda.
 
-## Parametry wiersza poleceĹ„
+## Parametry wiersza poleceń
 
-| Parametr | DziaĹ‚anie |
+| Parametr | Działanie |
 |---|---|
-| `/dane:<folder>` | inny folder danych â€“ osobna instancja, bez autostartu (np. do testĂłw) |
-| `/restart` | uruchomienie po awarii (czeka na zamkniÄ™cie poprzedniej instancji) |
-| `/test-awaria` | celowa awaria po 3 s â€“ sprawdzenie auto-restartu |
+| `/dane:<folder>` | inny folder danych – osobna instancja, bez autostartu (np. do testów) |
+| `/restart` | uruchomienie po awarii (czeka na zamknięcie poprzedniej instancji) |
+| `/test-awaria` | celowa awaria po 3 s – sprawdzenie auto-restartu |
 
-## WskazĂłwki dla rozwoju
+## Wskazówki dla rozwoju
 
-- Kod musi kompilowaÄ‡ siÄ™ kompilatorem C# 5 z .NET Framework (patrz [Technologia](#technologia)).
-- Nie ustawiaÄ‡ `DataGridView.FirstDisplayedScrollingRowIndex`, gdy tabela nie ma jeszcze wysokoĹ›ci â€“
-  Windows Forms potrafi siÄ™ wtedy zawiesiÄ‡ (`PanelForm.ScrollPunchesToEnd`).
-- W `CellPainting` rysowaÄ‡ tĹ‚o przez `PaintCellBase` i nie zostawiaÄ‡ `SmoothingMode.AntiAlias` w obiekcie `Graphics`.
-- Przy nowych polach w plikach CSV dopisywaÄ‡ kolumny na koĹ„cu i zachowaÄ‡ zgodnoĹ›Ä‡ wstecz (brak kolumny = wartoĹ›Ä‡ domyĹ›lna).
-- KaĹĽda rÄ™czna zmiana danych powinna trafiaÄ‡ do `Store.Audit`.
+- Kod musi kompilować się kompilatorem C# 5 z .NET Framework (patrz [Technologia](#technologia)).
+- Nie ustawiać `DataGridView.FirstDisplayedScrollingRowIndex`, gdy tabela nie ma jeszcze wysokości –
+  Windows Forms potrafi się wtedy zawiesić (`PanelForm.ScrollPunchesToEnd`).
+- W `CellPainting` rysować tło przez `PaintCellBase` i nie zostawiać `SmoothingMode.AntiAlias` w obiekcie `Graphics`.
+- Przy nowych polach w plikach CSV dopisywać kolumny na końcu i zachować zgodność wstecz (brak kolumny = wartość domyślna).
+- Każda ręczna zmiana danych powinna trafiać do `Store.Audit`.
 
