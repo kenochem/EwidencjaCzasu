@@ -1,0 +1,24 @@
+# Skompilowany program – dystrybuowany jako wydanie (Releases), nie w kodzie
+*.exe
+*.pdb
+
+# DANE OSOBOWE – nigdy nie trafiają do repozytorium
+# (odbicia, pracownicy, nieobecności, kopie zapasowe, PIN, ustawienia lokalne)
+*.zip
+*.csv
+*.dat
+*.log
+ustawienia.txt
+ostatnio_aktywny.txt
+ostatnia_kopia.txt
+awarie.txt
+EwidencjaCzasu - kopia/
+EwidencjaCzasu/
+kopie/
+raporty/
+dane/
+
+# Pliki tymczasowe
+*.tmp
+Thumbs.db
+desktop.ini
