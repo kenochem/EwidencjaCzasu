@@ -22,6 +22,7 @@
 - [Zrzuty ekranu](#zrzuty-ekranu)
 - [Wymagania](#wymagania)
 - [Szybki start](#szybki-start)
+- [Terminal na osobnym laptopie](#terminal-na-osobnym-laptopie)
 - [Jak działa czytnik](#jak-działa-czytnik)
 - [Dane i prywatność](#dane-i-prywatność)
 - [Struktura projektu](#struktura-projektu)
@@ -111,6 +112,30 @@ Gotowe – od teraz każde przyłożenie karty to wejście lub wyjście.
 
 Szczegółowy opis wszystkich ekranów: **[Instrukcja obsługi](docs/INSTRUKCJA.md)**.
 
+## Terminal na osobnym laptopie
+
+Zalecana konfiguracja dla biura: **laptop przy wejściu** rejestruje odbicia całą dobę (bateria chroni przed zanikiem
+prądu, automatyczne logowanie po aktualizacjach), a **Twój komputer** działa jako **panel** – podgląd i poprawki
+danych laptopa przez sieć. Twój komputer możesz wtedy usypiać i wyłączać bez utraty odbić.
+
+```bat
+:: na laptopie (jako administrator)
+git clone https://github.com/kenochem/EwidencjaCzasu.git C:\EwidencjaCzasu
+C:\EwidencjaCzasu\instalacja\1_zainstaluj_terminal.bat
+```
+
+Gotowe skrypty w folderze [`instalacja/`](instalacja/):
+
+| Skrypt | Gdzie | Co robi |
+|---|---|---|
+| `1_zainstaluj_terminal.bat` | laptop (administrator) | kompilacja, zasilanie bez usypiania, klapa nic nie robi, USB zawsze aktywne, godziny Windows Update, udostępnienie danych w sieci |
+| `2_eksport_danych_ze_starego_komputera.bat` | stary komputer | pakuje dane do ZIP i wyłącza tam terminal |
+| `3_import_danych_na_laptopie.bat` | laptop | wgrywa dane z ZIP (z kopią poprzednich) |
+| `4_podlacz_panel_na_moim_komputerze.bat` | Twój komputer | panel z danymi laptopa: skróty, autostart, zapamiętane hasło |
+| `aktualizuj.bat` | oba | pobiera nową wersję z GitHuba, kompiluje i uruchamia ponownie |
+
+Pełna instrukcja krok po kroku: **[Terminal na osobnym laptopie](docs/LAPTOP.md)**.
+
 ## Jak działa czytnik
 
 Tani czytnik USB „udaje” klawiaturę: wpisuje numer karty i Enter tam, gdzie akurat jest kursor.
@@ -146,11 +171,13 @@ EwidencjaCzasu/
 │   ├── Grafik.cs           grafik miesięczny, roczny plan urlopów, dni wolne firmowe
 │   ├── Wyglad.cs           motywy, kolory, przyciski, karty, pola dat, nawigacja
 │   └── kompiluj.bat        kompilacja do EwidencjaCzasu.exe
+├── instalacja/             skrypty: terminal na laptopie, migracja danych, panel, aktualizacja
 ├── testy/
 │   ├── Testy.cs            testy logiki (czytnik, kalendarz, normy, raporty, kopie…)
 │   └── uruchom_testy.bat
 └── docs/
     ├── INSTRUKCJA.md       instrukcja obsługi
+    ├── LAPTOP.md           terminal na osobnym laptopie (instalacja krok po kroku)
     ├── TECHNICZNE.md       dokumentacja techniczna
     └── img/                zrzuty ekranu
 ```
@@ -169,6 +196,7 @@ Przed kompilacją zamknij działający program (prawy klik na ikonce → *Zamkni
 ## Dokumentacja
 
 - 📘 **[Instrukcja obsługi](docs/INSTRUKCJA.md)** – codzienna praca, wszystkie ekrany, najczęstsze pytania.
+- 💻 **[Terminal na osobnym laptopie](docs/LAPTOP.md)** – instalacja, automatyczne logowanie, migracja danych, panel, aktualizacje.
 - 🔧 **[Dokumentacja techniczna](docs/TECHNICZNE.md)** – architektura, pliki danych, ustawienia, algorytmy, rozwój.
 
 ---

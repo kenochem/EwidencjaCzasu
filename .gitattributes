@@ -1,0 +1,5 @@
+# Skrypty .bat muszą mieć końce linii Windows (CRLF), inaczej cmd potrafi się pogubić
+*.bat text eol=crlf
+*.cs  text eol=crlf
+*.md  text eol=lf
+*.png binary

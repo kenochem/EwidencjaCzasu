@@ -53,6 +53,7 @@ namespace EwidencjaCzasu
             menu.Items.Add(new ToolStripSeparator());
             pauseItem = new ToolStripMenuItem("Wstrzymaj przechwytywanie czytnika", null, (s, e) => { if (Unlocked("Wstrzymanie czytnika")) TogglePause(); });
             autoItem = new ToolStripMenuItem("Uruchamiaj razem z Windows", null, (s, e) => { if (Unlocked("Autostart")) ToggleAutostart(); });
+            pauseItem.Visible = autoItem.Visible = !Program.PanelOnly;
             EnsureAutostart();
             autoItem.Checked = AutoStartRegistered;
             menu.Items.Add(pauseItem);
@@ -71,6 +72,14 @@ namespace EwidencjaCzasu
                 Visible = true
             };
             tray.DoubleClick += (s, e) => ShowPanel();
+
+            if (Program.PanelOnly)
+            {
+                // tryb panelu: bez czytnika, przypomnień, kopii i pilnowania zasilania – to robi terminal
+                tray.Text = Short("Ewidencja czasu – panel (" + Store.Dir + ")");
+                Toast.Popup("Ewidencja czasu – panel", "Dane z terminala:\n" + Store.Dir + "\nPanel: dwuklik na ikonce przy zegarku.", Colors.Blue, 6000);
+                return;
+            }
 
             capture = new KeyboardCapture();
             capture.CardRead += code => ui.BeginInvoke(new Action(() => OnCard(code)));
@@ -100,6 +109,8 @@ namespace EwidencjaCzasu
                     restarted ? "Wystąpił błąd – program sam się zrestartował.\nCzytnik znów działa." : "Przyłóż kartę do czytnika.\nPanel: dwuklik na ikonce przy zegarku.",
                     restarted ? Colors.Orange : Colors.Blue, 5000);
         }
+
+        static string Short(string s) { return s.Length <= 63 ? s : s.Substring(0, 60) + "…"; } // limit podpowiedzi ikonki
 
         // ---------------------------------------------------------- ciągłość działania
 
@@ -412,6 +423,13 @@ namespace EwidencjaCzasu
             if (!Unlocked("Zamknięcie programu")) return;
             if (MessageBox.Show("Zamknąć program? Odbicia kart nie będą rejestrowane.", "Ewidencja Czasu",
                     MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes) return;
+            if (Program.PanelOnly)
+            {
+                tray.Visible = false;
+                tray.Dispose();
+                ExitThread();
+                return;
+            }
             Store.Audit("ZAMKNIĘCIE PROGRAMU", "", "");
             try { Store.Heartbeat(); } catch { }
             SystemEvents.PowerModeChanged -= OnPowerMode;

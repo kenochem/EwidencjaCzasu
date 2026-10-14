@@ -236,6 +236,7 @@ raporty CSV i HTML, kopię ZIP, przerwy w działaniu, formy zatrudnienia i etat,
 | `/dane:<folder>` | inny folder danych – osobna instancja, bez autostartu (np. do testów) |
 | `/restart` | uruchomienie po awarii (czeka na zamknięcie poprzedniej instancji) |
 | `/test-awaria` | celowa awaria po 3 s – sprawdzenie auto-restartu |
+| `/panel` | **tryb panelu**: bez czytnika, przypomnień, kopii, znacznika „żyję”, pilnowania zasilania i autostartu – podgląd i poprawki danych terminala; zwykle razem z `/dane:\\TERMINAL\EwidencjaCzasu` (patrz [LAPTOP.md](LAPTOP.md)) |
 
 ## Wskazówki dla rozwoju
 

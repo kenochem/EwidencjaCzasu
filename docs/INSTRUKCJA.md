@@ -244,5 +244,6 @@ Czytnik jest wolniejszy niż zakładano – w `ustawienia.txt` zwiększ `max_ods
 **Plik `odbicia.csv` jest otwarty w Excelu – co z odbiciami?**
 Zapisują się tymczasowo i trafiają do pliku po jego zamknięciu. Poprawki najlepiej robić w panelu, a nie w Excelu.
 
-**Jak przenieść program na inny komputer?**
-Skopiuj `EwidencjaCzasu.exe` i cały folder `Dokumenty\EwidencjaCzasu`, podłącz czytnik i uruchom program.
+**Jak przenieść program na inny komputer (np. laptop przy wejściu)?**
+Gotowe skrypty i instrukcja krok po kroku: **[Terminal na osobnym laptopie](LAPTOP.md)** – razem z przeniesieniem
+danych i panelem na Twoim komputerze.

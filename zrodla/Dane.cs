@@ -16,6 +16,8 @@ namespace EwidencjaCzasu
     {
         static int crashing;
         public static bool CustomDataDir, TestCrash;
+        // Tryb „tylko panel”: bez czytnika, podgląd i poprawki danych z innego komputera (terminala).
+        public static bool PanelOnly;
 
         [STAThread]
         static void Main(string[] args)
@@ -26,11 +28,13 @@ namespace EwidencjaCzasu
                 if (a.StartsWith("/dane:", StringComparison.OrdinalIgnoreCase)) Store.Dir = a.Substring(6);
                 if (a.Equals("/restart", StringComparison.OrdinalIgnoreCase)) restart = true;
                 if (a.Equals("/test-awaria", StringComparison.OrdinalIgnoreCase)) TestCrash = true;
+                if (a.Equals("/panel", StringComparison.OrdinalIgnoreCase)) PanelOnly = true;
             }
             // osobny folder danych (np. do testów) = osobna instancja, bez autostartu
             string defaultDir = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments), "EwidencjaCzasu");
             CustomDataDir = !string.Equals(Path.GetFullPath(Store.Dir).TrimEnd('\\'), defaultDir, StringComparison.OrdinalIgnoreCase);
-            string mutexName = "EwidencjaCzasuPracy_RCP" + (CustomDataDir ? "_" + Path.GetFullPath(Store.Dir).ToLowerInvariant().GetHashCode() : "");
+            string mutexName = "EwidencjaCzasuPracy_RCP" + (PanelOnly ? "_panel" : "") +
+                (CustomDataDir ? "_" + Path.GetFullPath(Store.Dir).ToLowerInvariant().GetHashCode() : "");
 
             // nieoczekiwany błąd: zapis do bledy.log i automatyczne ponowne uruchomienie
             Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
@@ -53,6 +57,13 @@ namespace EwidencjaCzasu
                 }
                 Application.EnableVisualStyles();
                 Application.SetCompatibleTextRenderingDefault(false);
+                // tryb panelu: folder danych jest na laptopie – czekamy, aż będzie dostępny w sieci
+                while (PanelOnly && !Directory.Exists(Store.Dir))
+                {
+                    if (MessageBox.Show("Brak dostępu do danych na terminalu:\n" + Store.Dir +
+                            "\n\nSprawdź, czy laptop z czytnikiem jest włączony i podłączony do sieci.", "Ewidencja Czasu – panel",
+                            MessageBoxButtons.RetryCancel, MessageBoxIcon.Warning) != DialogResult.Retry) return;
+                }
                 try { Store.Init(); }
                 catch (Exception ex)
                 {
@@ -318,7 +329,7 @@ namespace EwidencjaCzasu
             if (!File.Exists(AbsFile)) File.WriteAllText(AbsFile, AbsHeader + "\r\n", Bom);
             Cfg.Load(CfgFile);
             Theme.Load();
-            DailyBackup();
+            if (!Program.PanelOnly) DailyBackup(); // kopie robi terminal, nie panel
         }
 
         public static void DailyBackup()
